@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "axios": "^1.11.0",
+    "element-plus": "^2.11.2",
+    "pinia-plugin-persistedstate": "^4.5.0",
+    "vue-waterfall-plugin": "^3.3.2",
+    "vue-waterfall-plugin-next": "^2.6.9"
+  },
+  "devDependencies": {
+    "sass": "^1.92.0",
+    "unplugin-auto-import": "^20.1.0",
+    "unplugin-vue-components": "^29.0.0"
+  }
+}
