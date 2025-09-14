@@ -1,4 +1,4 @@
-import { http } from '@/utils/http'
+import { http,ranking_http } from '@/utils/http'
 
 
 export const getImgList = (data) => {
@@ -6,5 +6,12 @@ export const getImgList = (data) => {
       url: 'duckMo',
       method: 'POST',
       data
+    })
+}
+export const getRankingImgList = (params) => {
+    return ranking_http({
+      url: 'pixiv/ranking.php',
+      method: 'GET',
+      params
     })
 }

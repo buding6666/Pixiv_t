@@ -22,9 +22,25 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
+  server: {
+    proxy: {
+      '/pixiv': {
+        target: 'http://43.167.234.120:8020',
+        changeOrigin: true,
+      },
+      '/signup': {
+        target: 'http://43.167.234.120:8050/',
+        changeOrigin: true,
+      },
+      '/login': {
+        target: 'http://43.167.234.120:8050/',
+        changeOrigin: true,
+      },
+    },
+  },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   css: {
@@ -33,8 +49,8 @@ export default defineConfig({
         additionalData: `
           @use "@/styles/element/index.scss" as *;
           @use "@/styles/var.scss" as *;
-        `
-      }
-    }
-  }
+        `,
+      },
+    },
+  },
 })

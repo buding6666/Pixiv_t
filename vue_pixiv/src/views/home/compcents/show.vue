@@ -1,7 +1,7 @@
 <script setup>
 import img1 from '@/assest/images/image1.png'
 import { ref } from 'vue'
-const carousel_url = ["image1.png", "image2.jpg", "image3.jpg"]
+const carousel_url = ["image1.png", "image2.jpg", "image3.jpg","image6.png","image5.png","image4.png"]
 
 const carouselProps = ref({
   "height": "400px",
@@ -29,14 +29,14 @@ const getAssetURL = (image) => {
   <div class="home ">
     <div class="container">
       <div class="picture_show">
-                <div class="picture_show_list">
+        <div class="picture_show_list">
           <ul>
             <!-- <li><el-image class="img" :src="img1" :fit="'contain'" /></li>
             <li><el-image class="img":src="img1" :fit="'scale-down'" /></li>
             <li><el-image class="img":src="img1" :fit="'scale-down'" /></li> -->
-            <li><img src="../../../assest/images/image1.png" alt=""></li>
-            <li><img src="../../../assest/images/image1.png" alt=""></li>
-            <li><img src="../../../assest/images/image1.png" alt=""></li>
+            <li><img src="../../../assest/images/image7.png" alt=""></li>
+            <li><img src="../../../assest/images/image8.png" alt=""></li>
+            <li><img src="../../../assest/images/image9.png" alt=""></li>
           </ul>
         </div>
         <!-- 轮播图 -->
@@ -47,6 +47,10 @@ const getAssetURL = (image) => {
                 <img v-bind:src=getAssetURL(item) alt="">
             </el-carousel-item>
           </el-carousel>
+        </div>
+
+        <div class="picture_show_harp">
+          <img src="../../../assest/images/image10.png" alt="">
         </div>
       </div>
     </div>
@@ -64,22 +68,32 @@ const getAssetURL = (image) => {
       justify-content: center;
       .carousel{
         width: 800px;
+        border-radius: 8px;
+        overflow: hidden;     /* 隐藏超出部分 */
+        position: relative;
+        .el-carousel__container,
+        .el-carousel__track,
+        .el-carousel__item
+        {
+          border-radius: 8px;
+          overflow: hidden; /* 关键，隐藏 track 移动时的溢出 */
+          clip-path: inset(0 round 8px);
+
+        }
         img{
           width: 800px;
           height: 400px;
         }
-        padding-left: 12px;
       }
       .picture_show_list{
         height: 400px;
-        padding-right: 12px;
+        padding-right: 6px;
         ul{
           li{
             img{
               width: 200px;
               height: 120px;
-              // padding-top: 5px;
-              // padding-bottom: 5px;
+              border-radius: 8px;
             }
           }
           li:not(:last-child) {
@@ -89,6 +103,14 @@ const getAssetURL = (image) => {
             padding-top: 10px;
           }
         }
+    }
+    .picture_show_harp{
+      padding-left: 6px;
+      img{
+        height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
     }
     }
 

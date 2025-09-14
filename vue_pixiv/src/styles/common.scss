@@ -10,10 +10,18 @@ html {
 body {
   user-select: text;
   height: 100%;
+  width: 100%;
   color: #333;
   min-width: 1240px;
-  font: 1em/1.4 'Microsoft Yahei', 'PingFang SC', 'Avenir', 'Segoe UI',
-    'Hiragino Sans GB', 'STHeiti', 'Microsoft Sans Serif', 'WenQuanYi Micro Hei',
+  font:
+    1em/1.4 'Microsoft Yahei',
+    'PingFang SC',
+    'Avenir',
+    'Segoe UI',
+    'Hiragino Sans GB',
+    'STHeiti',
+    'Microsoft Sans Serif',
+    'WenQuanYi Micro Hei',
     sans-serif;
 }
 body,
@@ -51,7 +59,7 @@ img {
   max-width: 100%;
   max-height: 100%;
   vertical-align: middle;
-  background: #ebebeb url('@/assets/images/200.png') no-repeat center / contain;
+  // background: #ebebeb url('@/assets/images/200.png') no-repeat center / contain;
 }
 ul {
   list-style: none;
@@ -66,6 +74,8 @@ ul {
   width: 1240px;
   margin: 0 auto;
   position: relative;
+  background-color: white;
+  border-radius: 5px;
 }
 .ellipsis {
   white-space: nowrap;
@@ -104,6 +114,6 @@ ul {
   font-weight: 400 !important;
 }
 
-body{
+body {
   user-select: text;
 }

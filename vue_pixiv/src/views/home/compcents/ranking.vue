@@ -1,29 +1,57 @@
 <script setup>
 import HomeImgCardTemp from './img_card.vue'
 import { useImgStore } from '@/stores/imgStore'
-import { getImgList } from '@/apis/ImgGetApi'
-import { ref, onMounted } from 'vue'
+import { getImgList ,getRankingImgList} from '@/apis/ImgGetApi'
+import { ref, onMounted,watch } from 'vue'
 
-const modele = ref(0)
+const date = ref(new Date()) // 默认当前日期
+const modele = ref('daily')
+const daily_count = ref(1)
+const weekly_count = ref(1)
+const monthly_count = ref(1)
+const count = ref(1)
+
+
 const loading = ref(false)
 const imgstore = useImgStore()
 
-const data = ref({
-  "num": 20,
-  "proxy": "i.yuki.sh",
-  "sizeList": ["small"],
-  "r18Type":imgstore.R18_flag
+const params = ref({
+  "mode": "daily",
+  "date":null,
+  "content": "illust",
+  "p":1,
+  "format": "json",
 })
 
-const fetchImages = async() => {
-  const response = await getImgList(data.value)
-  console.log(response.errCode)
-  if (Number(response.errCode) === 200) {
-    console.log(response)
-    imgstore.img_data.push(...response.data)
-    loading.value = false
+
+
+const fetchImages = async () => {
+  params.value.mode = modele.value
+  params.value.p = count.value
+  const response = await getRankingImgList(params.value)
+  console.log(response.contents)
+  const data_t = []
+  for (let i = 0; i < response.contents.length; i++) {
+    const item = response.contents[i];
+    data_t.push({
+      title: item.title,
+      urlsList:[{ url: item.url.replace("https://i.pximg.net", "http://43.167.234.120:8020/pximg/"),}],
+      pid: item.illust_id,
+      uid: item.user_id,
+      author: item.user_name,
+      tagsList: item.tags,
+    })
+
   }
-  // 假设接口返回数据在 response.data.list
+  if (modele.value === `daily`) {
+    imgstore.day_ranking.push(...data_t)
+  }
+  else if (modele.value === `weekly`) {
+    imgstore.week_ranking.push(...data_t)
+  }
+  else if (modele.value === `monthly`) {
+    imgstore.month_ranking.push(...data_t)
+  }
 }
 
 
@@ -36,9 +64,9 @@ function loadMore() {
 }
 
 onMounted(() => {
-  const container = document.querySelector('.scroll-container')
-  container.addEventListener('scroll', () => {
-    const scrollBottom = container.scrollHeight - container.scrollTop - container.clientHeight
+  fetchImages()
+  window.addEventListener('scroll', () => {
+    const scrollBottom = document.documentElement.scrollHeight - window.scrollY - window.innerHeight
     if (scrollBottom < 50 && !loading.value) {
       loadMore()
     }
@@ -47,7 +75,44 @@ onMounted(() => {
 
 const changeMode = (mode) => {
   modele.value = mode
+  if (mode === `daily`) {
+    daily_count.value += 1
+    count.value = daily_count.value
+  }
+  else if (mode === `weekly`) {
+    weekly_count.value += 1
+    count.value = daily_count.value
+
+  }
+  else if (mode === `monthly`) {
+    monthly_count.value += 1
+    count.value = daily_count.value
+  }
+  fetchImages()
 }
+
+
+
+watch(date, (newVal) => {
+  if (!newVal) return
+  const d = new Date(newVal)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0') // 月份 +1
+  const day = String(d.getDate()).padStart(2, '0')
+  const formatted = `${y}${m}${day}`
+  console.log('date 改变了:', formatted)
+
+  params.value.date = formatted
+  params.value.content = null
+  daily_count.value = 1
+  weekly_count.value = 1
+  monthly_count.value = 1
+  count.value = 1
+  imgstore.week_ranking = []
+  imgstore.month_ranking = []
+  imgstore.day_ranking = []
+  fetchImages()
+})
 </script>
 
 
@@ -57,43 +122,55 @@ const changeMode = (mode) => {
     <div class="container">
       <div class="ranking_classify">
         <ul>
-          <li><el-button type="primary" @click="changeMode(0)">日榜</el-button></li>
-          <li><el-button type="primary" @click="changeMode(1)">周榜</el-button></li>
-          <li><el-button type="primary" @click="changeMode(2)">月榜</el-button></li>
+          <li><el-button type="primary" @click="changeMode(`daily`)">日榜</el-button></li>
+          <li><el-button type="primary" @click="changeMode(`weekly`)">周榜</el-button></li>
+          <li><el-button type="primary" @click="changeMode(`monthly`)">月榜</el-button></li>
+          <li>
+            <div class="demo-date-picker">
+              <el-date-picker
+                v-model="date"
+                type="date"
+                placeholder="Pick a day"
+                :size="size"
+              />
+            </div>
+          </li>
         </ul>
       </div>
     </div>
   </div>
   <div class="ranking_img_show">
-    <div v-if="modele === 0" class="scroll-container">
-      <HomeImgCardTemp :img_data="imgstore.img_data">
+    <div v-if="modele === `daily`" class="scroll-container">
+      <HomeImgCardTemp :img_data="imgstore.day_ranking">
       <template #top>
+        <span class="iconfont icon-yinghua"></span>
         <h2><router-link to="/">首页</router-link></h2>
-        <p>>></p>
+        <p>&nbsp;&nbsp; >> &nbsp;&nbsp;</p>
         <h2><router-link to="/new">榜单</router-link></h2>
       </template>
       </HomeImgCardTemp >
-      <div v-if="loading">加载中...</div>
+      <div class ="loading">加载中...</div>
     </div>
-    <div v-if="modele === 1" class="scroll-container">
-      <HomeImgCardTemp :img_data="imgstore.img_data">
+    <div v-if="modele === `weekly`" class="scroll-container">
+      <HomeImgCardTemp :img_data="imgstore.week_ranking">
       <template #top>
-        <h2><router-link to="/">首页</router-link></h2>
-        <p>>></p>
-        <h2><router-link to="/new">榜单</router-link></h2>
+        <h2><router-link to="/">首页 </router-link></h2>
+        <p>&nbsp;&nbsp;>>&nbsp;&nbsp;</p>
+        <h2><router-link to="/new"> 榜单</router-link></h2>
       </template>
       </HomeImgCardTemp >
-      <div v-if="loading">加载中...</div>
+      <div class ="loading">加载中...</div>
+
     </div>
-      <div v-if="modele === 2" class="scroll-container">
-      <HomeImgCardTemp :img_data="imgstore.img_data">
+      <div v-if="modele === `monthly`" class="scroll-container">
+      <HomeImgCardTemp :img_data="imgstore.month_ranking">
       <template #top>
         <h2><router-link to="/">首页</router-link></h2>
         <p>>></p>
         <h2><router-link to="/new">榜单</router-link></h2>
       </template>
       </HomeImgCardTemp >
-      <div v-if="loading">加载中...</div>
+      <div class ="loading">加载中...</div>
     </div>
   </div>
 
@@ -108,6 +185,9 @@ const changeMode = (mode) => {
   padding-top: 70px;
   .container{
     .ranking_classify{
+       display: flex;
+      justify-content: center;
+      border-radius: 5px;
       width: 100%;
       height: 70px;
       background-color: #fff;
@@ -124,11 +204,23 @@ const changeMode = (mode) => {
   }
 }
 .ranking_img_show{
-  padding-top: 140px;
-  .scroll-container {
-      height: 100vh;
-      overflow-y: auto;
+  padding-top: 160px;
+  span{
+    padding-left: 24px;
+    padding-right: 24px;
+    font-size: 32px;
   }
+  .loading {
+    width: 100%;
+    text-align: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    font-size: 18px;
+  }
+  // .scroll-container {
+  //     height: 100vh;
+  //     overflow-y: auto;
+  // }
   // .new {
   //   padding-top: 90px;
   //   .scroll-container {

@@ -14,6 +14,14 @@ const data = ref({
   "sizeList": ["small"],
   "author": "",
 })
+// 当前激活的索引
+const activeIndex = ref(1)
+
+// 点击导航时设置激活项
+function setActive(index) {
+  activeIndex.value = index
+}
+
 
 const ImgSearch = async () => {
   if (input.value != "") {
@@ -57,20 +65,22 @@ const R18Set = () => {
 <template>
     <nav class="header">
       <div class="container">
-        <h1 class="logo">
-          <router-link to="/"> 壁纸网站</router-link>
-        </h1>
+        <div class="logo">
+          <h1>
+            <router-link to="/"> <img src="../../../assest/images/logo.png" alt=""></router-link>
+          </h1>
+        </div>
 
         <ul class="header-nav">
-          <li><router-link to="/">首页</router-link></li>
-          <li><router-link to="/boutique">精品</router-link></li>
-          <li><router-link to="/new">新作</router-link></li>
-          <li><router-link to="/ranking">榜单</router-link></li>
+
+            <li><router-link to="/" :class="{ active: activeIndex === 1 }" @click="setActive(1)">首页</router-link></li>
+             <li><router-link to="/ranking" :class="{ active: activeIndex === 2 }" @click="setActive(2)">榜单</router-link></li>
+          <!-- <li><router-link to="/ranking">榜单</router-link></li> -->
         </ul>
 
         <div class="search">
            <el-input v-model="input" @keyup.enter="ImgSearch" clearable class="input" placeholder="搜索" />
-           <el-button @click="ImgSearch"><i class="iconfont icon-sousuo"></i></el-button>
+           <!-- <span @click="ImgSearch" class="iconfont icon-sousuo"></span> -->
         </div>
         <template v-if="userstore.userInfo?.token">
           <div class="user">
@@ -119,25 +129,41 @@ const R18Set = () => {
 
 <style scoped lang="scss">
   .header {
-    background-color: $primary;
+    background-color: $primary !important;
     width: 100%;
     position: fixed;
     top: 0;
     z-index: 9999; /* 层级较低，可能被覆盖 */
    .container {
+      background-color: $primary !important;
+
       display: flex;
       align-items: center; /* 垂直居中 */
       height: 70px;
       .logo {
-        padding-right: 50px;
+        img{
+          width: 180px;
+        }
       }
       .header-nav {
         display: flex;
         align-items: center;
         li{
-          font-size: 16px;
-          padding: 0 20px;
+          font-size: 18px;
+          padding: 0 15px;
+          a{
+            color: white !important;
+          }
+          a:hover{
+            color: #104ec0 !important;
+            border-bottom: 2px solid #104ec0;
+          }
         }
+        .active {
+          color: #104ec0 !important;
+          border-bottom: 2px solid #104ec0;
+        }
+
       }
 
 
@@ -145,23 +171,26 @@ const R18Set = () => {
         display: flex;
         align-items: center;
         position: absolute;
-        right: 10%;
+        right: 12%;
         .input{
           width: 320px;
         }
-        i{
-          font-size: 20px;
-        }
+        span{
+          font-size: 30px;
+       }
       }
       .user
       {
         position: absolute;
-        right: 48px;
+        right: 62px;
         ul{
           display: flex;
           align-items: center;
           li{
-            font-size: 16px;
+            font-size: 18px;
+            a{
+              color: white !important;
+            }
           }
         }
       }
